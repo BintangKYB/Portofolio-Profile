@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Bintang's Portfolio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+  <style>
+    :root {
+      --bg: #0f0f0f;
+      --text: #f5f5f5;
+      --accent: #7f5af0;
+      --secondary: #2e2e2e;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      scroll-behavior: smooth;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    #aurora-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      background: 
+        linear-gradient(45deg, rgba(127, 90, 240, 0.3), rgba(255, 77, 148, 0.2), rgba(0, 183, 235, 0.2), transparent 70%),
+        linear-gradient(135deg, rgba(0, 183, 235, 0.2), rgba(127, 90, 240, 0.3), rgba(255, 77, 148, 0.2), transparent 70%),
+        linear-gradient(225deg, rgba(255, 77, 148, 0.2), rgba(0, 183, 235, 0.2), rgba(127, 90, 240, 0.3), transparent 70%);
+      background-size: 200% 200%;
+      animation: aurora 20s ease infinite;
+      opacity: 0.8;
+    }
+
+    #aurora-bg::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(15, 15, 15, 0.3);
+    }
+
+    @keyframes aurora {
+      0% { background-position: 0% 0%; }
+      50% { background-position: 100% 100%; }
+      100% { background-position: 0% 0%; }
+    }
+
+    nav {
+      background: var(--secondary);
+      padding: 1rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      opacity: 0;
+    }
+
+    nav ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+    }
+
+    nav a {
+      color: var(--text);
+      text-decoration: none;
+      font-weight: 700;
+      transition: color 0.3s ease, transform 0.3s ease;
+    }
+
+    nav a:hover {
+      color: var(--accent);
+      transform: scale(1.1);
+    }
+
+    header {
+      text-align: center;
+      padding: 4rem 1rem 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    header img {
+      width: 150px;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 50%;
+      border: 3px solid var(--accent);
+      margin-bottom: 1rem;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 2rem;
+    }
+
+    .typewriter {
+      overflow: hidden;
+      display: inline-block;
+      white-space: nowrap;
+      position: relative;
+    }
+
+    .typewriter::after {
+      content: '|';
+      color: var(--accent);
+      position: absolute;
+      right: -0.7em;
+      top: 0;
+      font-size: 1.2em;
+      font-weight: 700;
+      animation: blink 0.7s step-end infinite;
+      text-shadow: 0 0 8px rgba(127, 90, 240, 0.7), 0 0 12px rgba(127, 90, 240, 0.4);
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.2; }
+    }
+
+    section {
+      padding: 3rem 1rem;
+      max-width: 900px;
+      margin: auto;
+      position: relative;
+    }
+
+    section h2 {
+      font-size: 1.8rem;
+      color: var(--accent);
+      margin-bottom: 1rem;
+    }
+
+    .slider {
+      display: flex;
+      gap: 1rem;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      padding-bottom: 1rem;
+    }
+
+    .slider::-webkit-scrollbar {
+      height: 6px;
+    }
+
+    .slider::-webkit-scrollbar-thumb {
+      background: var(--accent);
+      border-radius: 3px;
+    }
+
+    .card, .work-card {
+      background: var(--secondary);
+      padding: 1rem;
+      border-radius: 10px;
+      flex: 0 0 280px;
+      scroll-snap-align: start;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      position: relative;
+    }
+
+    .card:hover, .work-card:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 15px rgba(127, 90, 240, 0.3);
+    }
+
+    .card img {
+      width: 150px;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 8px;
+      border: 2px solid var(--accent);
+      margin-bottom: 0.5rem;
+    }
+
+    .work-card a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 700;
+    }
+
+    .work-card a:hover {
+      text-decoration: underline;
+    }
+
+    .work-section h3 {
+      font-size: 1.4rem;
+      color: var(--text);
+      margin: 1rem 0 0.5rem;
+    }
+
+    .contact-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      text-align: center;
+    }
+
+    .contact-card {
+      background: var(--secondary);
+      padding: 1rem;
+      border-radius: 8px;
+    }
+
+    .music-player {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-top: 0.5rem;
+      width: 100%;
+      justify-content: center;
+    }
+
+    .music-player button {
+      background: var(--accent);
+      border: none;
+      color: var(--text);
+      padding: 0.5rem;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .music-player button:hover {
+      background: #6b4cd1;
+    }
+
+    .music-player select {
+      background: var(--secondary);
+      color: var(--text);
+      border: 1px solid var(--accent);
+      padding: 0.3rem;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .music-player progress {
+      width: 100%;
+      height: 8px;
+      background: var(--secondary);
+      cursor: pointer;
+      border-radius: 4px;
+    }
+
+    .music-player progress::-webkit-progress-bar {
+      background: var(--secondary);
+      border-radius: 4px;
+    }
+
+    .music-player progress::-webkit-progress-value {
+      background: var(--accent);
+      border-radius: 4px;
+    }
+
+    .volume-control {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .volume-control input[type="range"] {
+      width: 80px;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(45deg, #0f0f0f, #1a1a3d);
+      animation: gradient 15s ease infinite;
+      background-size: 200% 200%;
+      z-index: 200;
+      justify-content: center;
+      align-items: center;
+    }
+
+    @keyframes gradient {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .modal-content {
+      background: var(--secondary);
+      padding: 2rem;
+      border-radius: 10px;
+      width: 90%;
+      height: 90%;
+      max-width: 800px;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+    }
+
+    .modal-content h3 {
+      color: var(--accent);
+      margin-bottom: 1rem;
+    }
+
+    .modal-content p {
+      line-height: 1.6;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: none;
+      border: none;
+      color: var(--text);
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+
+    footer {
+      text-align: center;
+      padding: 2rem;
+      font-size: 0.9rem;
+      color: #999;
+      position: relative;
+    }
+
+    .card-slider {
+      width: 100%;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .card-slider-inner {
+      display: flex;
+      transition: transform 0.3s ease;
+    }
+
+    .card-slide {
+      flex: 0 0 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    .slider-nav {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+
+    .slider-nav button {
+      background: var(--accent);
+      border: none;
+      color: var(--text);
+      padding: 0.3rem 0.6rem;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      font-size: 0.8rem;
+    }
+
+    .slider-nav button:hover {
+      background: #6b4cd1;
+    }
+
+    .slider-nav button:disabled {
+      background: #555;
+      cursor: not-allowed;
+    }
+
+    @media (max-width: 600px) {
+      h1 { font-size: 1.5rem; }
+      section h2 { font-size: 1.4rem; }
+      nav ul { flex-wrap: wrap; gap: 1rem; }
+      .modal-content { width: 95%; height: 95%; }
+      .typewriter::after { font-size: 1em; }
+      .card, .work-card { flex: 0 0 250px; }
+      .card img { width: 120px; height: 120px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="aurora-bg"></div>
+
+  <nav>
+    <ul>
+      <li><a href="#home">Home</a></li>
+      <li><a href="#influences">Influences</a></li>
+      <li><a href="#favorites">Favorites</a></li>
+      <li><a href="#works">Works</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <header id="home">
+    <img src="assets/me.jpg" alt="Bintang's Photo" />
+    <h1>Hello, I'm Bintang</h1>
+    <p class="typewriter">A creator of songs, poetry, and digital experiences.</p>
+  </header>
+
+  <section id="influences" class="influence">
+    <h2>What Influences Me</h2>
+    <p>Life in its rawness, beauty in struggle, sincerity in sound, and rebellion through art. I draw influence from real emotion, street observations, and the music that moves my soul.</p>
+  </section>
+
+  <section id="favorites" class="favorites">
+    <h2>Favorite Albums</h2>
+    <div class="slider">
+      <div class="card">
+        <img src="assets/continuum.jpg" alt="Continuum Cover" />
+        <h3>Continuum</h3>
+        <p>John Mayer</p>
+        <p>A soulful blend of blues, pop, and rock, weaving heartfelt lyrics with masterful guitar work that captures longing and self-discovery.</p>
+      </div>
+      <div class="card">
+        <img src="assets/nirvana.jpg" alt="Nevermind Cover" />
+        <h3>Nevermind</h3>
+        <p>Nirvana</p>
+        <p>A raw, grunge masterpiece that channels angst and rebellion, with iconic riffs and raw emotion that redefined a generation.</p>
+      </div>
+      <div class="card">
+        <img src="assets/american heartbreak.jpg" alt="American Heartbreak Cover" />
+        <h3>American Heartbreak</h3>
+        <p>Zach Bryan</p>
+        <p>A sprawling, raw country-folk epic that paints stories of love, loss, and the American spirit with unflinching honesty.</p>
+      </div>
+      <div class="card">
+        <img src="assets/Elisabeth.jpg" alt="Elisabeth Cover" />
+        <h3>Elisabeth</h3>
+        <p>Zach Bryan</p>
+        <p>An intimate, lo-fi collection of songs that feel like whispered confessions, steeped in nostalgia and tender vulnerability.</p>
+      </div>
+      <div class="card">
+        <img src="assets/Born and raised.jpg" alt="Born and Raised Cover" />
+        <h3>Born and Raised</h3>
+        <p>John Mayer</p>
+        <p>A reflective journey through folk and Americana, exploring roots, redemption, and the quiet beauty of introspection.</p>
+      </div>
+      <div class="card">
+        <img src="assets/The Search for Everything.jpg" alt="The Search for Everything Cover" />
+        <h3>The Search for Everything</h3>
+        <p>John Mayer</p>
+        <p>A soul-searching odyssey blending blues and pop, with lush melodies that explore love, heartbreak, and self-reinvention.</p>
+      </div>
+      <div class="card">
+        <img src="assets/Where the Light Is John Mayer Live in Los Angeles.jpg" alt="Where the Light Is: John Mayer Live in Los Angeles Cover" />
+        <h3>Where the Light Is: John Mayer Live in Los Angeles</h3>
+        <p>John Mayer</p>
+        <p>A electrifying live album capturing Mayer’s versatility, from acoustic intimacy to blistering blues-rock performances.</p>
+      </div>
+      <div class="card">
+        <img src="assets/These Two Windows.jpg" alt="These Two Windows Cover" />
+        <h3>These Two Windows</h3>
+        <p>Alec Benjamin</p>
+        <p>A storytelling pop gem, weaving introspective lyrics with catchy melodies that explore youth, love, and mental struggles.</p>
+      </div>
+      <div class="card">
+        <img src="assets/get rich or die tryin'.jpg" alt="Get Rich or Die Tryin' Cover" />
+        <h3>Get Rich or Die Tryin'</h3>
+        <p>50 Cent</p>
+        <p>A gritty hip-hop classic, chronicling survival and ambition with raw lyricism and infectious beats that resonate with resilience.</p>
+      </div>
+      <div class="card">
+        <img src="assets/(Un)Commentary.jpg" alt="(Un)Commentary Cover" />
+        <h3>(Un)Commentary</h3>
+        <p>Alec Benjamin</p>
+        <p>A poignant pop reflection on society and self, blending witty commentary with heartfelt narratives and melodic hooks.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="works" class="works">
+    <h2>My Works</h2>
+    <div class="slider">
+      <div class="work-card">
+        <h3>Songs</h3>
+        <h4 class="song-title">🎵 <em>Alibi</em> – Pop Songs</h4>
+        <p></p>
+        <div class="music-player">
+          <select class="playlist">
+            <option value="assets/Alibi.mp3" data-title="Alibi">Alibi</option>
+            <option value="assets/For You.mp3" data-title="For You">For You</option>
+          </select>
+          <button class="play-btn">▶️</button>
+          <button class="loop-btn">🔁</button>
+          <progress value="0" max="100"></progress>
+          <span class="time">0:00</span>
+          <div class="volume-control">
+            <span>🔊</span>
+            <input type="range" min="0" max="1" step="0.1" value="1" class="volume-slider">
+          </div>
+        </div>
+      </div>
+      <div class="work-card">
+        <h3>Poetry</h3>
+        <div class="card-slider" id="poetry-slider">
+          <div class="card-slider-inner">
+            <div class="card-slide">
+              <h4>🌙 <em>Duri</em> – Original Poem</h4>
+              <p></p>
+              <a href="#" class="open-modal" data-poem="Duri">Read Now</a>
+            </div>
+            <div class="card-slide">
+              <h4>🌙 <em>Supernova</em> – Original Poem</h4>
+              <p></p>
+              <a href="#" class="open-modal" data-poem="Supernova">Read Now</a>
+            </div>
+          </div>
+        </div>
+        <div class="slider-nav">
+          <button class="prev-btn" data-slider="poetry">← Prev</button>
+          <button class="next-btn" data-slider="poetry">Next →</button>
+        </div>
+      </div>
+      <div class="work-card">
+        <h3>Web Projects</h3>
+        <div class="card-slider" id="web-slider">
+          <div class="card-slider-inner">
+            <div class="card-slide">
+              <h4>💻 <em>Bangun Ruang 3D</em> – Web Project</h4>
+              <p></p>
+              <a href="https://bintangkyb.github.io/bangun-ruang-3d/" target="_blank">View Project</a>
+            </div>
+            <div class="card-slide">
+              <h4>💻 <em>Aljabar</em> – Web Project</h4>
+              <p></p>
+              <a href="https://bintangkyb.github.io/Bintang-Aljabar/" target="_blank">View Project</a>
+            </div>
+          </div>
+        </div>
+        <div class="slider-nav">
+          <button class="prev-btn" data-slider="web">← Prev</button>
+          <button class="next-btn" data-slider="web">Next →</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact" class="contact">
+    <h2>Contact Me</h2>
+    <div class="contact-grid">
+      <div class="contact-card">
+        <h4>Instagram</h4>
+        <p><a href="https://www.instagram.com/bintang_r49/?hl=en">@bintang_r49</a></p>
+      </div>
+      <div class="contact-card">
+        <h4>Youtube</h4>
+        <p><a href="https://www.youtube.com/@bintang_r4" target="_blank">@bintang_r4</a></p>
+      </div>
+      <div class="contact-card">
+        <h4>GitHub</h4>
+        <p><a href="https://github.com/BintangKYB" target="_blank">https://github.com/BintangKYB</a></p>
+      </div>
+    </div>
+  </section>
+
+  <div class="modal" id="poem-modal">
+    <div class="modal-content">
+      <button class="close-btn">×</button>
+      <h3 id="modal-title"></h3>
+      <p id="modal-text"></p>
+    </div>
+  </div>
+
+  <footer>
+    &copy; 2025 Bintang Ramadhan • Made with passion
+  </footer>
+
+  <script>
+    // Ensure GSAP is loaded
+    if (typeof gsap === 'undefined') {
+      console.error('GSAP not loaded. Check CDN link or internet connection.');
+    }
+
+    gsap.registerPlugin(ScrollTrigger);
+
+    // Opening animation timeline
+    const openingTl = gsap.timeline({ defaults: { ease: "power2.out" } });
+    openingTl
+      .from("#aurora-bg", {
+        opacity: 0,
+        duration: 1.5,
+      })
+      .from("header img", {
+        scale: 0.8,
+        opacity: 0,
+        duration: 1,
+        ease: "elastic.out(1, 0.5)",
+      }, "-=1")
+      .from("h1", {
+        y: 50,
+        opacity: 0,
+        duration: 0.8,
+      }, "-=0.5")
+      .from(".typewriter", {
+        x: -50,
+        opacity: 0,
+        duration: 0.8,
+      }, "-=0.5")
+      .from("nav", {
+        y: -100,
+        opacity: 0,
+        duration: 0.8,
+      }, "-=0.3");
+
+    // Typewriter effect with typewriter cursor
+    const typewriterText = document.querySelector('.typewriter');
+    const text = "A creator of songs, poetry, and digital experiences.";
+    typewriterText.textContent = '';
+    text.split('').forEach((char, i) => {
+      const span = document.createElement('span');
+      span.textContent = char;
+      span.style.display = char === ' ' ? 'inline' : 'inline-block';
+      typewriterText.appendChild(span);
+      gsap.from(span, {
+        opacity: 0,
+        y: char === ' ' ? 0 : 10,
+        duration: 0.4,
+        delay: i * 0.04 + 1.5,
+        ease: "power2.out"
+      });
+    });
+
+    // Typewriter cursor animation
+    gsap.to('.typewriter::after', {
+      opacity: 0.2,
+      duration: 0.7,
+      repeat: -1,
+      yoyo: true,
+      ease: "power1.inOut",
+      delay: 2.5
+    });
+
+    // Navigation hover animation
+    gsap.utils.toArray("nav a").forEach(link => {
+      link.addEventListener('mouseenter', () => {
+        gsap.to(link, {
+          scale: 1.1,
+          color: 'var(--accent)',
+          duration: 0.3,
+          ease: "power2.out"
+        });
+      });
+      link.addEventListener('mouseleave', () => {
+        gsap.to(link, {
+          scale: 1,
+          color: 'var(--text)',
+          duration: 0.3,
+          ease: "power2.out"
+        });
+      });
+    });
+
+    // Section animations with ScrollTrigger
+    gsap.utils.toArray("section").forEach((section) => {
+      gsap.from(section.children, {
+        scrollTrigger: {
+          trigger: section,
+          start: "top 80%",
+          toggleActions: "play none none none",
+          markers: false
+        },
+        y: 30,
+        opacity: 0,
+        duration: 0.8,
+        stagger: 0.2,
+        ease: "power3.out"
+      });
+    });
+
+    // Card hover and scroll animations
+    gsap.utils.toArray(".card, .work-card").forEach((card) => {
+      gsap.from(card, {
+        scrollTrigger: {
+          trigger: card,
+          start: "top 90%",
+          toggleActions: "play none none none"
+        },
+        y: 50,
+        opacity: 0,
+        duration: 0.7,
+        ease: "power3.out"
+      });
+
+      card.addEventListener('mouseenter', () => {
+        gsap.to(card, {
+          scale: 1.05,
+          boxShadow: "0 4px 15px rgba(127, 90, 240, 0.3)",
+          duration: 0.3,
+          ease: "power2.out"
+        });
+      });
+      card.addEventListener('mouseleave', () => {
+        gsap.to(card, {
+          scale: 1,
+          boxShadow: "none",
+          duration: 0.3,
+          ease: "power2.out"
+        });
+      });
+    });
+
+    // Footer animation
+    gsap.from("footer", {
+      scrollTrigger: {
+        trigger: "footer",
+        start: "top 90%",
+        toggleActions: "play none none none"
+      },
+      opacity: 0,
+      y: 20,
+      duration: 0.8,
+      ease: "power2.out"
+    });
+
+    // Music Player Logic
+    const playlist = document.querySelector('.playlist');
+    const playBtn = document.querySelector('.play-btn');
+    const loopBtn = document.querySelector('.loop-btn');
+    const progress = document.querySelector('progress');
+    const timeDisplay = document.querySelector('.time');
+    const volumeSlider = document.querySelector('.volume-slider');
+    const songTitle = document.querySelector('.song-title');
+    let audio = new Audio(playlist.value);
+
+    const updatePlayer = () => {
+      audio.src = playlist.value;
+      audio.currentTime = 0;
+      progress.value = 0;
+      timeDisplay.textContent = '0:00';
+      playBtn.textContent = '▶️';
+      loopBtn.style.background = audio.loop ? '#6b4cd1' : 'var(--accent)';
+      const selectedOption = playlist.options[playlist.selectedIndex];
+      songTitle.innerHTML = `🎵 <em>${selectedOption.dataset.title}</em> – Pop Songs`;
+      gsap.from(songTitle, {
+        opacity: 0,
+        y: 10,
+        duration: 0.3,
+        ease: "power2.out"
+      });
+    };
+
+    playlist.addEventListener('change', updatePlayer);
+
+    playBtn.addEventListener('click', () => {
+      if (audio.paused) {
+        audio.play().catch(e => console.error('Audio play failed:', e));
+        playBtn.textContent = '⏸';
+        gsap.to(playBtn, {
+          scale: 1.2,
+          duration: 0.2,
+          ease: "power2.out",
+          yoyo: true,
+          repeat: 1
+        });
+      } else {
+        audio.pause();
+        playBtn.textContent = '▶️';
+        gsap.to(playBtn, {
+          scale: 1.2,
+          duration: 0.2,
+          ease: "power2.out",
+          yoyo: true,
+          repeat: 1
+        });
+      }
+    });
+
+    loopBtn.addEventListener('click', () => {
+      audio.loop = !audio.loop;
+      loopBtn.style.background = audio.loop ? '#6b4cd1' : 'var(--accent)';
+      gsap.to(loopBtn, {
+        scale: 1.2,
+        duration: 0.2,
+        ease: "power2.out",
+        yoyo: true,
+        repeat: 1
+      });
+    });
+
+    progress.addEventListener('click', (e) => {
+      const rect = progress.getBoundingClientRect();
+      const clickX = e.clientX - rect.left;
+      const width = rect.width;
+      const seekTime = (clickX / width) * audio.duration;
+      audio.currentTime = seekTime;
+    });
+
+    audio.addEventListener('timeupdate', () => {
+      const progressPercent = (audio.currentTime / audio.duration) * 100;
+      progress.value = progressPercent;
+      const minutes = Math.floor(audio.currentTime / 60);
+      const seconds = Math.floor(audio.currentTime % 60).toString().padStart(2, '0');
+      timeDisplay.textContent = `${minutes}:${seconds}`;
+    });
+
+    audio.addEventListener('ended', () => {
+      if (!audio.loop) {
+        playBtn.textContent = '▶️';
+        progress.value = 0;
+        timeDisplay.textContent = '0:00';
+      }
+    });
+
+    volumeSlider.addEventListener('input', () => {
+      audio.volume = volumeSlider.value;
+      gsap.to(volumeSlider, {
+        scale: 1.1,
+        duration: 0.2,
+        ease: "power2.out",
+        yoyo: true,
+        repeat: 1
+      });
+    });
+
+    // Card Slider Logic
+    const sliders = {
+      poetry: {
+        element: document.querySelector('#poetry-slider .card-slider-inner'),
+        slides: document.querySelectorAll('#poetry-slider .card-slide'),
+        currentIndex: 0
+      },
+      web: {
+        element: document.querySelector('#web-slider .card-slider-inner'),
+        slides: document.querySelectorAll('#web-slider .card-slide'),
+        currentIndex: 0
+      }
+    };
+
+    const updateSlider = (sliderId) => {
+      const slider = sliders[sliderId];
+      gsap.to(slider.element, {
+        x: -slider.currentIndex * 100 + '%',
+        duration: 0.3,
+        ease: 'power2.out'
+      });
+      const prevBtn = document.querySelector(`.prev-btn[data-slider="${sliderId}"]`);
+      const nextBtn = document.querySelector(`.next-btn[data-slider="${sliderId}"]`);
+      prevBtn.disabled = slider.currentIndex === 0;
+      nextBtn.disabled = slider.currentIndex === slider.slides.length - 1;
+    };
+
+    document.querySelectorAll('.prev-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const sliderId = btn.dataset.slider;
+        const slider = sliders[sliderId];
+        if (slider.currentIndex > 0) {
+          slider.currentIndex--;
+          updateSlider(sliderId);
+          gsap.to(btn, {
+            scale: 1.2,
+            duration: 0.2,
+            ease: "power2.out",
+            yoyo: true,
+            repeat: 1
+          });
+        }
+      });
+    });
+
+    document.querySelectorAll('.next-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const sliderId = btn.dataset.slider;
+        const slider = sliders[sliderId];
+        if (slider.currentIndex < slider.slides.length - 1) {
+          slider.currentIndex++;
+          updateSlider(sliderId);
+          gsap.to(btn, {
+            scale: 1.2,
+            duration: 0.2,
+            ease: "power2.out",
+            yoyo: true,
+            repeat: 1
+          });
+        }
+      });
+    });
+
+    // Initialize sliders
+    updateSlider('poetry');
+    updateSlider('web');
+
+    // Modal Logic
+    const modal = document.getElementById('poem-modal');
+    const modalTitle = document.getElementById('modal-title');
+    const modalText = document.getElementById('modal-text');
+    const openModalLinks = document.querySelectorAll('.open-modal');
+    const closeBtn = document.querySelector('.close-btn');
+
+    const poems = {
+      Duri: {
+        title: 'Duri',
+        text: `kau datang menemani dengan maksud yang tak bisa kumengerti<br>
+tentu kau tertancap duri...tubuhku sengaja kuselimuti duri<br>
+jika kau tersakiti obati lukamu dengan membenci dan hendaklah pergi<br>
+peringatkan kawanmu tentang duri yang kau temui <br>
+dan tambahkanlah kebencian agar lukamu cepat terobati<br>
+tak heran duriku semakin menjadi..semakin kau mendekat semakin kau tersakiti.`
+      },
+      Supernova: {
+        title: 'Supernova',
+        text: `aku menunggu supernova yang tak kunjung terjadi<br>
+mati katanya bintang yang tak dikenal ini<br>
+harapan ingin menerangi tak tertepati<br>
+jadilah dia serpihan yang mengambang diruang antariksa yang sepi<br>
+komet yang setia berkunjung 70 tahun seali tak mengerti mengapa dia(bintang) mati<br>
+tragedy yang terjadi seolah berkata aku mati tak lain hanya ingin terlahir kembali.`
+      }
+    };
+
+    openModalLinks.forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const poemId = link.dataset.poem;
+        modalTitle.textContent = poems[poemId].title;
+        modalText.innerHTML = poems[poemId].text;
+        modal.style.display = 'flex';
+        gsap.fromTo('.modal-content', 
+          { scale: 0.8, opacity: 0, y: 50 },
+          { scale: 1, opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' }
+        );
+      });
+    });
+
+    closeBtn.addEventListener('click', () => {
+      gsap.to('.modal-content', {
+        scale: 0.8,
+        opacity: 0,
+        y: 50,
+        duration: 0.3,
+        ease: 'power2.in',
+        onComplete: () => { modal.style.display = 'none'; }
+      });
+    });
+
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        gsap.to('.modal-content', {
+          scale: 0.8,
+          opacity: 0,
+          y: 50,
+          duration: 0.3,
+          ease: 'power2.in',
+          onComplete: () => { modal.style.display = 'none'; }
+        });
+      }
+    });
+
+    // Initialize song title
+    updatePlayer();
+  </script>
+</body>
+</html>
