@@ -1,493 +1,1002 @@
+
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Visual 3D Bangun Ruang - Handpose TensorFlow.js</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Bintang's Portfolio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
   <style>
-    body { margin:0; font-family:Arial,sans-serif; background:#e8f5e9; color:#333; }
-    header { background:#1b5e20; color:#fff; padding:20px; text-align:center; box-shadow:0 4px 20px rgba(0,0,0,0.3); }
-    .logo { width:90px; margin:10px auto; display:block; }
-    h1 { font-size:24px; margin:10px 0; }
-    .subtitle { font-size:16px; font-style:italic; }
-    .author { font-weight:bold; font-size:20px; margin:10px; }
-    #container { width:100%; height:65vh; background:#f0f8ff; position:relative; overflow:hidden; }
-    .controls { text-align:center; padding:15px; background:#fff; box-shadow:0 -4px 15px rgba(0,0,0,0.1); }
-    button { margin:6px; padding:12px 24px; background:#2e7d32; color:#fff; border:none; border-radius:8px; cursor:pointer; font-size:16px; transition:all 0.3s; }
-    button:hover { background:#1b5e20; transform:translateY(-2px); }
-    button.active { background:#1b5e20; box-shadow:0 0 15px #4caf50; font-weight:bold; }
-    .tools { position:fixed; top:15px; right:15px; z-index:100; background:rgba(0,0,0,0.75); color:#fff; padding:12px; border-radius:12px; font-size:14px; box-shadow:0 4px 20px rgba(0,0,0,0.3); }
-    .tools button { background:none; border:none; color:#fff; margin:6px 0; cursor:pointer; display:block; width:100%; text-align:left; }
-    #info { margin:20px; padding:20px; background:#fff; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.1); }
-    .saintifik { background:#e8f5e9; border-left:6px solid #4caf50; padding:18px; margin:15px 0; border-radius:8px; }
-    .komunikasi { background:#fff3e0; border-left:6px solid #ff9800; padding:18px; margin:15px 0; border-radius:8px; }
-    .label-sudut { position:absolute; background:#fff; color:#d32f2f; font-weight:bold; padding:6px 10px; border-radius:50%; font-size:18px; pointer-events:none; z-index:10; box-shadow:0 2px 10px rgba(0,0,0,0.4); transform:translate(-50%,-50%); }
-    #handStatus { color:#d32f2f; font-weight:bold; margin:10px; text-align:center; font-size:18px; padding:10px; background:#fff3e0; border-radius:8px; }
-    #debugCanvas { border: 3px solid #d32f2f; margin: 10px auto; display: block; width: 320px; height: 240px; background:#000; }
-    footer { text-align:center; padding:20px; background:#1b5e20; color:#fff; font-size:14px; }
+    :root {
+      --bg: #0f0f0f;
+      --text: #f5f5f5;
+      --accent: #7f5af0;
+      --secondary: #2e2e2e;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      scroll-behavior: smooth;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    #aurora-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      background: 
+        linear-gradient(45deg, rgba(127, 90, 240, 0.3), rgba(255, 77, 148, 0.2), rgba(0, 183, 235, 0.2), transparent 70%),
+        linear-gradient(135deg, rgba(0, 183, 235, 0.2), rgba(127, 90, 240, 0.3), rgba(255, 77, 148, 0.2), transparent 70%),
+        linear-gradient(225deg, rgba(255, 77, 148, 0.2), rgba(0, 183, 235, 0.2), rgba(127, 90, 240, 0.3), transparent 70%);
+      background-size: 200% 200%;
+      animation: aurora 20s ease infinite;
+      opacity: 0.8;
+    }
+
+    #aurora-bg::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(15, 15, 15, 0.3);
+    }
+
+    @keyframes aurora {
+      0% { background-position: 0% 0%; }
+      50% { background-position: 100% 100%; }
+      100% { background-position: 0% 0%; }
+    }
+
+    nav {
+      background: var(--secondary);
+      padding: 1rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      opacity: 0;
+    }
+
+    nav ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+    }
+
+    nav a {
+      color: var(--text);
+      text-decoration: none;
+      font-weight: 700;
+      transition: color 0.3s ease, transform 0.3s ease;
+    }
+
+    nav a:hover {
+      color: var(--accent);
+      transform: scale(1.1);
+    }
+
+    header {
+      text-align: center;
+      padding: 4rem 1rem 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    header img {
+      width: 150px;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 50%;
+      border: 3px solid var(--accent);
+      margin-bottom: 1rem;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 2rem;
+    }
+
+    .typewriter {
+      overflow: hidden;
+      display: inline-block;
+      white-space: nowrap;
+      position: relative;
+    }
+
+    .typewriter::after {
+      content: '|';
+      color: var(--accent);
+      position: absolute;
+      right: -0.7em;
+      top: 0;
+      font-size: 1.2em;
+      font-weight: 700;
+      animation: blink 0.7s step-end infinite;
+      text-shadow: 0 0 8px rgba(127, 90, 240, 0.7), 0 0 12px rgba(127, 90, 240, 0.4);
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.2; }
+    }
+
+    section {
+      padding: 3rem 1rem;
+      max-width: 900px;
+      margin: auto;
+      position: relative;
+    }
+
+    section h2 {
+      font-size: 1.8rem;
+      color: var(--accent);
+      margin-bottom: 1rem;
+    }
+
+    .slider {
+      display: flex;
+      gap: 1rem;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      padding-bottom: 1rem;
+    }
+
+    .slider::-webkit-scrollbar {
+      height: 6px;
+    }
+
+    .slider::-webkit-scrollbar-thumb {
+      background: var(--accent);
+      border-radius: 3px;
+    }
+
+    .card, .work-card {
+      background: var(--secondary);
+      padding: 1rem;
+      border-radius: 10px;
+      flex: 0 0 280px;
+      scroll-snap-align: start;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      position: relative;
+    }
+
+    .card:hover, .work-card:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 15px rgba(127, 90, 240, 0.3);
+    }
+
+    .card img {
+      width: 150px;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 8px;
+      border: 2px solid var(--accent);
+      margin-bottom: 0.5rem;
+    }
+
+    .work-card a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 700;
+    }
+
+    .work-card a:hover {
+      text-decoration: underline;
+    }
+
+    .work-section h3 {
+      font-size: 1.4rem;
+      color: var(--text);
+      margin: 1rem 0 0.5rem;
+    }
+
+    .contact-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      text-align: center;
+    }
+
+    .contact-card {
+      background: var(--secondary);
+      padding: 1rem;
+      border-radius: 8px;
+    }
+
+    .music-player {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-top: 0.5rem;
+      width: 100%;
+      justify-content: center;
+    }
+
+    .music-player button {
+      background: var(--accent);
+      border: none;
+      color: var(--text);
+      padding: 0.5rem;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .music-player button:hover {
+      background: #6b4cd1;
+    }
+
+    .music-player select {
+      background: var(--secondary);
+      color: var(--text);
+      border: 1px solid var(--accent);
+      padding: 0.3rem;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .music-player progress {
+      width: 100%;
+      height: 8px;
+      background: var(--secondary);
+      cursor: pointer;
+      border-radius: 4px;
+    }
+
+    .music-player progress::-webkit-progress-bar {
+      background: var(--secondary);
+      border-radius: 4px;
+    }
+
+    .music-player progress::-webkit-progress-value {
+      background: var(--accent);
+      border-radius: 4px;
+    }
+
+    .volume-control {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .volume-control input[type="range"] {
+      width: 80px;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(45deg, #0f0f0f, #1a1a3d);
+      animation: gradient 15s ease infinite;
+      background-size: 200% 200%;
+      z-index: 200;
+      justify-content: center;
+      align-items: center;
+    }
+
+    @keyframes gradient {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .modal-content {
+      background: var(--secondary);
+      padding: 2rem;
+      border-radius: 10px;
+      width: 90%;
+      height: 90%;
+      max-width: 800px;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+    }
+
+    .modal-content h3 {
+      color: var(--accent);
+      margin-bottom: 1rem;
+    }
+
+    .modal-content p {
+      line-height: 1.6;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: none;
+      border: none;
+      color: var(--text);
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+
+    footer {
+      text-align: center;
+      padding: 2rem;
+      font-size: 0.9rem;
+      color: #999;
+      position: relative;
+    }
+
+    .card-slider {
+      width: 100%;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .card-slider-inner {
+      display: flex;
+      transition: transform 0.3s ease;
+    }
+
+    .card-slide {
+      flex: 0 0 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    .slider-nav {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+
+    .slider-nav button {
+      background: var(--accent);
+      border: none;
+      color: var(--text);
+      padding: 0.3rem 0.6rem;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      font-size: 0.8rem;
+    }
+
+    .slider-nav button:hover {
+      background: #6b4cd1;
+    }
+
+    .slider-nav button:disabled {
+      background: #555;
+      cursor: not-allowed;
+    }
+
+    @media (max-width: 600px) {
+      h1 { font-size: 1.5rem; }
+      section h2 { font-size: 1.4rem; }
+      nav ul { flex-wrap: wrap; gap: 1rem; }
+      .modal-content { width: 95%; height: 95%; }
+      .typewriter::after { font-size: 1em; }
+      .card, .work-card { flex: 0 0 250px; }
+      .card img { width: 120px; height: 120px; }
+    }
   </style>
 </head>
 <body>
-<header>
-  <img src="https://upload.wikimedia.org/wikipedia/id/1/1f/Logo_IKIP_Siliwangi.png" alt="IKIP Siliwangi" class="logo">
-  <h1>PENGEMBANGAN VISUAL 3D INTERAKTIF DENGAN HANDPOSE</h1>
-  <p class="subtitle">Pendekatan Saintifik Berbantuan TensorFlow.js pada Materi Bangun Ruang Sisi Datar</p>
-  <div class="author">Bintang Ramadhan — 23510048 — IKIP Siliwangi 2025/2026</div>
-</header>
+  <div id="aurora-bg"></div>
 
-<div id="container"></div>
+  <nav>
+    <ul>
+      <li><a href="#home">Home</a></li>
+      <li><a href="#influences">Influences</a></li>
+      <li><a href="#favorites">Favorites</a></li>
+      <li><a href="#works">Works</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </nav>
 
-<canvas id="debugCanvas" width="320" height="240"></canvas>
-<div id="handStatus">Handpose: Klik tombol → izinkan kamera → gerakkan tangan telapak terbuka (jarak 30–60 cm, ruangan terang)</div>
+  <header id="home">
+    <img src="assets/me.jpg" alt="Bintang's Photo" />
+    <h1>Hello, I'm Bintang</h1>
+    <p class="typewriter">A creator of songs, poetry, and digital experiences.</p>
+  </header>
 
-<div class="controls">
-  <button class="btn active" data-shape="kubus">Kubus</button>
-  <button class="btn" data-shape="balok">Balok</button>
-  <button class="btn" data-shape="prismaSegitiga">Prisma Segitiga</button>
-  <button class="btn" data-shape="limasSegitiga">Limas Segitiga</button>
-  <button class="btn" data-shape="limasSegiempat">Limas Segiempat</button>
-  <button class="btn" data-shape="tabung">Tabung</button>
-  <button class="btn" data-shape="kerucut">Kerucut</button>
-  <button class="btn" data-shape="bola">Bola</button>
-</div>
+  <section id="influences" class="influence">
+    <h2>What Influences Me</h2>
+    <p>Life in its rawness, beauty in struggle, sincerity in sound, and rebellion through art. I draw influence from real emotion, street observations, and the music that moves my soul.</p>
+  </section>
 
-<div class="tools">
-  <button id="rotasi">⏸ Rotasi</button>
-  <button id="wireframe">Wireframe</button>
-  <button id="labels">Label Sudut</button>
-  <button id="shadows">Shadows</button>
-  <button id="handTrack">🖐 Hand Track</button>
-  <button id="reset">↻ Reset</button>
-  <button id="fullscreen">⛶ Fullscreen</button>
-</div>
+  <section id="favorites" class="favorites">
+    <h2>Favorite Albums</h2>
+    <div class="slider">
+      <div class="card">
+        <img src="assets/continuum.jpg" alt="Continuum Cover" />
+        <h3>Continuum</h3>
+        <p>John Mayer</p>
+        <p>A soulful blend of blues, pop, and rock, weaving heartfelt lyrics with masterful guitar work that captures longing and self-discovery.</p>
+      </div>
+      <div class="card">
+        <img src="assets/nirvana.jpg" alt="Nevermind Cover" />
+        <h3>Nevermind</h3>
+        <p>Nirvana</p>
+        <p>A raw, grunge masterpiece that channels angst and rebellion, with iconic riffs and raw emotion that redefined a generation.</p>
+      </div>
+      <div class="card">
+        <img src="assets/american heartbreak.jpg" alt="American Heartbreak Cover" />
+        <h3>American Heartbreak</h3>
+        <p>Zach Bryan</p>
+        <p>A sprawling, raw country-folk epic that paints stories of love, loss, and the American spirit with unflinching honesty.</p>
+      </div>
+      <div class="card">
+        <img src="assets/Elisabeth.jpg" alt="Elisabeth Cover" />
+        <h3>Elisabeth</h3>
+        <p>Zach Bryan</p>
+        <p>An intimate, lo-fi collection of songs that feel like whispered confessions, steeped in nostalgia and tender vulnerability.</p>
+      </div>
+      <div class="card">
+        <img src="assets/Born and raised.jpg" alt="Born and Raised Cover" />
+        <h3>Born and Raised</h3>
+        <p>John Mayer</p>
+        <p>A reflective journey through folk and Americana, exploring roots, redemption, and the quiet beauty of introspection.</p>
+      </div>
+      <div class="card">
+        <img src="assets/The Search for Everything.jpg" alt="The Search for Everything Cover" />
+        <h3>The Search for Everything</h3>
+        <p>John Mayer</p>
+        <p>A soul-searching odyssey blending blues and pop, with lush melodies that explore love, heartbreak, and self-reinvention.</p>
+      </div>
+      <div class="card">
+        <img src="assets/Where the Light Is John Mayer Live in Los Angeles.jpg" alt="Where the Light Is: John Mayer Live in Los Angeles Cover" />
+        <h3>Where the Light Is: John Mayer Live in Los Angeles</h3>
+        <p>John Mayer</p>
+        <p>A electrifying live album capturing Mayer’s versatility, from acoustic intimacy to blistering blues-rock performances.</p>
+      </div>
+      <div class="card">
+        <img src="assets/These Two Windows.jpg" alt="These Two Windows Cover" />
+        <h3>These Two Windows</h3>
+        <p>Alec Benjamin</p>
+        <p>A storytelling pop gem, weaving introspective lyrics with catchy melodies that explore youth, love, and mental struggles.</p>
+      </div>
+      <div class="card">
+        <img src="assets/get rich or die tryin'.jpg" alt="Get Rich or Die Tryin' Cover" />
+        <h3>Get Rich or Die Tryin'</h3>
+        <p>50 Cent</p>
+        <p>A gritty hip-hop classic, chronicling survival and ambition with raw lyricism and infectious beats that resonate with resilience.</p>
+      </div>
+      <div class="card">
+        <img src="assets/(Un)Commentary.jpg" alt="(Un)Commentary Cover" />
+        <h3>(Un)Commentary</h3>
+        <p>Alec Benjamin</p>
+        <p>A poignant pop reflection on society and self, blending witty commentary with heartfelt narratives and melodic hooks.</p>
+      </div>
+      <div class="card">
+        <img src="assets/brent ii.jpg" alt="(Un)Brent ii" />
+        <h3>Brent ii</h3>
+        <p>Chelsea Cutler and Jeremy Zucker</p>
+        <p>a tender pop-folk exploration of love and self-discovery, weaving intimate duets with heartfelt lyrics and minimalist melodies that resonate with raw emotion.</p>
+      </div>
+    </div>
+  </section>
 
-<div id="info">
-  <h2 id="title">Bangun Ruang: Kubus</h2>
-  <p id="formula">Volume = s × s × s = s³</p>
-  <div id="props"></div>
-  <div class="saintifik">
-    <h3>Pendekatan Saintifik (5M)</h3>
-    <ol>
-      <li><strong>Mengamati</strong>: Gerakkan tangan, amati titik hijau di kotak merah</li>
-      <li><strong>Menanya</strong>: Mengapa pinch bisa kontrol objek 3D?</li>
-      <li><strong>Mengumpulkan Informasi</strong>: Hitung sisi, rusuk, sudut sambil interaksi</li>
-      <li><strong>Mengasosiasi</strong>: Hubungkan gestur dengan konsep ruang</li>
-      <li><strong>Mengomunikasikan</strong>: Jelaskan pengalamanmu</li>
-    </ol>
+  <section id="works" class="works">
+    <h2>My Works</h2>
+    <div class="slider">
+      <div class="work-card">
+        <h3>Songs</h3>
+        <h4 class="song-title">🎵 <em>Alibi</em> – Pop Songs</h4>
+        <p></p>
+        <div class="music-player">
+          <select class="playlist">
+            <option value="assets/Alibi.mp3" data-title="Alibi">Alibi</option>
+            <option value="assets/For You.mp3" data-title="For You">For You</option>
+          </select>
+          <button class="play-btn">▶️</button>
+          <button class="loop-btn">🔁</button>
+          <progress value="0" max="100"></progress>
+          <span class="time">0:00</span>
+          <div class="volume-control">
+            <span>🔊</span>
+            <input type="range" min="0" max="1" step="0.1" value="1" class="volume-slider">
+          </div>
+        </div>
+      </div>
+      <div class="work-card">
+        <h3>Poetry</h3>
+        <div class="card-slider" id="poetry-slider">
+          <div class="card-slider-inner">
+            <div class="card-slide">
+              <h4>🌙 <em>Duri</em> – Original Poem</h4>
+              <p></p>
+              <a href="#" class="open-modal" data-poem="Duri">Read Now</a>
+            </div>
+            <div class="card-slide">
+              <h4>🌙 <em>Supernova</em> – Original Poem</h4>
+              <p></p>
+              <a href="#" class="open-modal" data-poem="Supernova">Read Now</a>
+            </div>
+            <div class="card-slide">
+              <h4>🌙 <em>Pertemuan</em> – Original Poem</h4>
+              <p></p>
+              <a href="#" class="open-modal" data-poem="Pertemuan">Read Now</a>
+            </div>
+          </div>
+        </div>
+        <div class="slider-nav">
+          <button class="prev-btn" data-slider="poetry">← Prev</button>
+          <button class="next-btn" data-slider="poetry">Next →</button>
+        </div>
+      </div>
+      <div class="work-card">
+        <h3>Web Projects</h3>
+        <div class="card-slider" id="web-slider">
+          <div class="card-slider-inner">
+            <div class="card-slide">
+              <h4>💻 <em>Bangun Ruang 3D</em> – Web Project</h4>
+              <p></p>
+              <a href="https://bintangkyb.github.io/bangun-ruang-3d/" target="_blank">View Project</a>
+            </div>
+            <div class="card-slide">
+              <h4>💻 <em>Bintang Aljabar</em> – Web Project</h4>
+              <p></p>
+              <a href="https://bintangkyb.github.io/Bintang-Aljabar/" target="_blank">View Project</a>
+            </div>
+          </div>
+        </div>
+        <div class="slider-nav">
+          <button class="prev-btn" data-slider="web">← Prev</button>
+          <button class="next-btn" data-slider="web">Next →</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact" class="contact">
+    <h2>Contact Me</h2>
+    <div class="contact-grid">
+      <div class="contact-card">
+        <h4>Instagram</h4>
+        <p><a href="https://www.instagram.com/bintang_r49/?hl=en">@bintang_r49</a></p>
+      </div>
+      <div class="contact-card">
+        <h4>Youtube</h4>
+        <p><a href="www.youtube.com/@bintang_r4" target="_blank">@bintang_r4</a></p>
+      </div>
+      <div class="contact-card">
+        <h4>Soundcloud</h4>
+        <p><a href="https://on.soundcloud.com/Gph80MHKiWsJdQHqaU" target="_blank">Bintang Ramadhan</a></p>
+      </div>
+    </div>
+  </section>
+
+  <div class="modal" id="poem-modal">
+    <div class="modal-content">
+      <button class="close-btn">×</button>
+      <h3 id="modal-title"></h3>
+      <p id="modal-text"></p>
+    </div>
   </div>
-  <div class="komunikasi">
-    <h3>Latihan Komunikasi Matematik</h3>
-    <p><em>Tuliskan penjelasan (minimal 3 kalimat):</em></p>
-    <details><summary>Contoh</summary>
-      <p style="background:#fff;padding:15px;border:1px solid #ddd;margin-top:10px;">
-        Dengan handpose, saya bisa menggerakkan model kubus menggunakan tangan. Pinch jari memungkinkan kontrol posisi dan rotasi. Fitur ini membantu memahami bangun ruang secara langsung dan interaktif.
-      </p>
-    </details>
-  </div>
-</div>
 
-<footer>© 2025/2026 Bintang Ramadhan — Skripsi Pendidikan Matematika IKIP Siliwangi | Menggunakan TensorFlow.js Handpose</footer>
+  <footer>
+    &copy; 2025 Bintang Ramadhan • Made with passion
+  </footer>
 
-<video id="webcam" autoplay playsinline style="display:none;"></video>
-
-<script type="importmap">
-{
-  "imports": {
-    "three": "https://cdn.jsdelivr.net/npm/three@0.182.0/build/three.module.js",
-    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.182.0/examples/jsm/"
-  }
-}
-</script>
-
-<script type="module">
-  import * as THREE from 'three';
-  import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-
-  // TensorFlow.js & Handpose
-  const tf = await import('https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest');
-  const handpose = await import('https://cdn.jsdelivr.net/npm/@tensorflow-models/handpose@latest');
-
-  const container = document.getElementById('container');
-  const video = document.getElementById('webcam');
-  const handStatus = document.getElementById('handStatus');
-  const debugCanvas = document.getElementById('debugCanvas');
-
-  let scene, camera, renderer, orbitControls;
-  let currentMesh, wireHelper;
-  let isRotating = true;
-  let isWireframe = false;
-  let showLabels = true;
-  let labels = [];
-  let handposeModel;
-  let handTrackActive = false;
-  let lastDetectionTime = 0;
-  let previewLoopId = null;
-
-  async function init() {
-    scene = new THREE.Scene();
-    scene.background = new THREE.Color(0xf0f8ff);
-    camera = new THREE.PerspectiveCamera(50, container.clientWidth / container.clientHeight, 0.1, 1000);
-    camera.position.set(0, 6, 12);
-
-    renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setSize(container.clientWidth, container.clientHeight);
-    renderer.shadowMap.enabled = true;
-    container.appendChild(renderer.domElement);
-
-    orbitControls = new OrbitControls(camera, renderer.domElement);
-    orbitControls.enableDamping = true;
-    orbitControls.dampingFactor = 0.05;
-
-    scene.add(new THREE.AmbientLight(0xffffff, 0.7));
-    const dirLight = new THREE.DirectionalLight(0xffffff, 1);
-    dirLight.position.set(10, 15, 10);
-    dirLight.castShadow = true;
-    scene.add(dirLight);
-
-    const floor = new THREE.Mesh(
-      new THREE.PlaneGeometry(100, 100),
-      new THREE.ShadowMaterial({ opacity: 0.3 })
-    );
-    floor.rotation.x = -Math.PI / 2;
-    floor.position.y = -3;
-    floor.receiveShadow = true;
-    scene.add(floor);
-
-    // Load Handpose model
-    try {
-      handposeModel = await handpose.load();
-      console.log("Handpose model loaded successfully");
-      handStatus.textContent = "Model Handpose siap! Klik tombol untuk mulai";
-    } catch (err) {
-      console.error("Gagal load Handpose model:", err);
-      handStatus.textContent = "Gagal memuat model Handpose. Cek koneksi internet.";
+  <script>
+    // Ensure GSAP is loaded
+    if (typeof gsap === 'undefined') {
+      console.error('GSAP not loaded. Check CDN link or internet connection.');
     }
 
-    animate();
-  }
+    gsap.registerPlugin(ScrollTrigger);
 
-  function previewDraw() {
-    if (!handTrackActive || !video.srcObject) {
-      previewLoopId = null;
-      return;
-    }
+    // Opening animation timeline
+    const openingTl = gsap.timeline({ defaults: { ease: "power2.out" } });
+    openingTl
+      .from("#aurora-bg", {
+        opacity: 0,
+        duration: 1.5,
+      })
+      .from("header img", {
+        scale: 0.8,
+        opacity: 0,
+        duration: 1,
+        ease: "elastic.out(1, 0.5)",
+      }, "-=1")
+      .from("h1", {
+        y: 50,
+        opacity: 0,
+        duration: 0.8,
+      }, "-=0.5")
+      .from(".typewriter", {
+        x: -50,
+        opacity: 0,
+        duration: 0.8,
+      }, "-=0.5")
+      .from("nav", {
+        y: -100,
+        opacity: 0,
+        duration: 0.8,
+      }, "-=0.3");
 
-    const ctx = debugCanvas.getContext('2d');
-
-    if (video.readyState >= 2) {
-      ctx.drawImage(video, 0, 0, debugCanvas.width, debugCanvas.height);
-    } else {
-      ctx.fillStyle = '#333';
-      ctx.fillRect(0, 0, debugCanvas.width, debugCanvas.height);
-      ctx.fillStyle = '#fff';
-      ctx.font = '16px Arial';
-      ctx.fillText('Menunggu kamera...', 20, debugCanvas.height / 2);
-    }
-
-    previewLoopId = requestAnimationFrame(previewDraw);
-  }
-
-  async function detectHand() {
-    if (!handposeModel || !handTrackActive || video.readyState < 2) return;
-
-    const predictions = await handposeModel.estimateHands(video);
-
-    const ctx = debugCanvas.getContext('2d');
-    ctx.drawImage(video, 0, 0, debugCanvas.width, debugCanvas.height);
-
-    if (predictions.length > 0) {
-      handStatus.textContent = "Tangan terdeteksi! Pinch jari untuk gerakkan bentuk";
-      console.log("Handpose detected:", predictions);
-
-      for (const prediction of predictions) {
-        const keypoints = prediction.landmarks;
-        for (const keypoint of keypoints) {
-          const [x, y] = keypoint;
-          ctx.beginPath();
-          ctx.arc(x * (debugCanvas.width / video.videoWidth), y * (debugCanvas.height / video.videoHeight), 5, 0, 2 * Math.PI);
-          ctx.fillStyle = '#00FF00';
-          ctx.fill();
-          ctx.strokeStyle = '#00FF00';
-          ctx.lineWidth = 2;
-          ctx.stroke();
-        }
-
-        // Pinch detection: distance between thumb tip (4) and index tip (8)
-        const thumbTip = keypoints[4];
-        const indexTip = keypoints[8];
-        const pinchDist = Math.hypot(thumbTip[0] - indexTip[0], thumbTip[1] - indexTip[1]);
-
-        isGrabbing = pinchDist < 35;  // adjust this number if too sensitive or not sensitive enough
-
-        if (isGrabbing && currentMesh) {
-          // Use wrist (0) for position control
-          const wrist = keypoints[0];
-          const x = (wrist[0] - video.videoWidth / 2) / (video.videoWidth / 2) * 15;
-          const y = (video.videoHeight / 2 - wrist[1]) / (video.videoHeight / 2) * 15;
-          const z = (pinchDist / 100) * -10; // closer pinch = move forward
-
-          currentMesh.position.set(x, y, z);
-        }
-      }
-    } else {
-      handStatus.textContent = "Tidak mendeteksi tangan - coba telapak terbuka lebar, terang, dekatkan tangan";
-    }
-  }
-
-  function animate() {
-    requestAnimationFrame(animate);
-
-    const now = performance.now();
-
-    if (handTrackActive && video.readyState >= video.HAVE_CURRENT_DATA) {
-      if (now - lastDetectionTime > 50) { // 20 fps detection - handpose is a bit heavier
-        lastDetectionTime = now;
-        detectHand();
-      }
-    }
-
-    if (isRotating && currentMesh && !handTrackActive) {
-      currentMesh.rotation.y += 0.005;
-      if (wireHelper) wireHelper.rotation.y += 0.005;
-    }
-
-    updateLabels();
-    orbitControls.update();
-    renderer.render(scene, camera);
-  }
-
-  function loadShape(shape) {
-    if (currentMesh) scene.remove(currentMesh);
-    if (wireHelper) scene.remove(wireHelper);
-    labels.forEach(l => l.el.remove());
-    labels = [];
-
-    document.querySelectorAll('.btn').forEach(b => b.classList.remove('active'));
-    document.querySelector(`[data-shape="${shape}"]`).classList.add('active');
-
-    let geo, title, formula, props, vertexCount = 0, isPolyhedral = true;
-    switch (shape) {
-      case 'kubus':
-        geo = new THREE.BoxGeometry(4, 4, 4); vertexCount = 8;
-        title = 'Bangun Ruang: Kubus'; formula = 'Volume = s × s × s = s³';
-        props = 'Sisi: 6 (persegi) | Rusuk: 12 | Titik Sudut: 8';
-        break;
-      case 'balok':
-        geo = new THREE.BoxGeometry(6, 4, 2); vertexCount = 8;
-        title = 'Bangun Ruang: Balok'; formula = 'Volume = p × l × t';
-        props = 'Sisi: 6 (persegi panjang) | Rusuk: 12 | Titik Sudut: 8';
-        break;
-      case 'prismaSegitiga':
-        geo = new THREE.CylinderGeometry(2.5, 2.5, 6, 3); vertexCount = 6;
-        title = 'Bangun Ruang: Prisma Segitiga'; formula = 'Volume = Luas alas × tinggi';
-        props = 'Sisi: 5 | Rusuk: 9 | Titik Sudut: 6';
-        break;
-      case 'limasSegitiga':
-        geo = new THREE.ConeGeometry(3.5, 6, 3); vertexCount = 4;
-        title = 'Bangun Ruang: Limas Segitiga'; formula = 'Volume = (1/3) × Luas alas × tinggi';
-        props = 'Sisi: 4 | Rusuk: 6 | Titik Sudut: 4';
-        break;
-      case 'limasSegiempat':
-        geo = new THREE.ConeGeometry(3.5, 6, 4); vertexCount = 5;
-        title = 'Bangun Ruang: Limas Segiempat'; formula = 'Volume = (1/3) × Luas alas × tinggi';
-        props = 'Sisi: 5 | Rusuk: 8 | Titik Sudut: 5';
-        break;
-      case 'tabung':
-        geo = new THREE.CylinderGeometry(2, 2, 7, 32); vertexCount = 0;
-        title = 'Bangun Ruang: Tabung'; formula = 'Volume = π r² t';
-        props = 'Sisi: 3 | Rusuk: 2 | Titik Sudut: 0';
-        isPolyhedral = false;
-        break;
-      case 'kerucut':
-        geo = new THREE.ConeGeometry(3, 7, 32); vertexCount = 1;
-        title = 'Bangun Ruang: Kerucut'; formula = 'Volume = (1/3) π r² t';
-        props = 'Sisi: 2 | Rusuk: 1 | Titik Sudut: 1';
-        isPolyhedral = false;
-        break;
-      case 'bola':
-        geo = new THREE.SphereGeometry(3.5, 32, 24); vertexCount = 0;
-        title = 'Bangun Ruang: Bola'; formula = 'Volume = (4/3) π r³';
-        props = 'Sisi: 1 | Rusuk: 0 | Titik Sudut: 0';
-        isPolyhedral = false;
-        break;
-    }
-
-    const mat = new THREE.MeshStandardMaterial({ color: 0x0077ff, roughness: 0.5, metalness: 0.1 });
-    currentMesh = new THREE.Mesh(geo, mat);
-    currentMesh.castShadow = true;
-    currentMesh.receiveShadow = true;
-    scene.add(currentMesh);
-
-    updateWireframe(isPolyhedral);
-
-    document.getElementById('title').textContent = title;
-    document.getElementById('formula').textContent = formula;
-    document.getElementById('props').innerHTML = props;
-
-    if (showLabels && vertexCount > 0) addLabels(vertexCount, geo);
-  }
-
-  function updateWireframe(isPolyhedral) {
-    if (wireHelper) scene.remove(wireHelper);
-    if (!isWireframe) return;
-    let wireGeo, wireMat = new THREE.LineBasicMaterial({ color: 0xffffff });
-    if (isPolyhedral) {
-      wireGeo = new THREE.EdgesGeometry(currentMesh.geometry, 30);
-    } else {
-      wireGeo = new THREE.WireframeGeometry(currentMesh.geometry);
-    }
-    wireHelper = new THREE.LineSegments(wireGeo, wireMat);
-    scene.add(wireHelper);
-  }
-
-  function addLabels(maxCount, geometry) {
-    const pos = geometry.attributes.position;
-    const seen = new Set();
-    let idx = 0;
-    for (let i = 0; i < pos.count && idx < maxCount; i++) {
-      const v = new THREE.Vector3(pos.getX(i), pos.getY(i), pos.getZ(i));
-      const key = v.toArray().map(n => n.toFixed(2)).join(',');
-      if (seen.has(key)) continue;
-      seen.add(key);
-      const label = document.createElement('div');
-      label.className = 'label-sudut';
-      label.textContent = String.fromCharCode(65 + idx);
-      container.appendChild(label);
-      labels.push({ el: label, pos: v.clone() });
-      idx++;
-    }
-  }
-
-  function updateLabels() {
-    labels.forEach(({ el, pos }) => {
-      const world = pos.clone().applyMatrix4(currentMesh.matrixWorld);
-      const proj = world.project(camera);
-      const w = container.clientWidth;
-      const h = container.clientHeight;
-      el.style.left = ((proj.x * 0.5 + 0.5) * w) + 'px';
-      el.style.top = ((0.5 - proj.y * 0.5) * h) + 'px';
+    // Typewriter effect with typewriter cursor
+    const typewriterText = document.querySelector('.typewriter');
+    const text = "A creator of songs, poetry, and digital experiences.";
+    typewriterText.textContent = '';
+    text.split('').forEach((char, i) => {
+      const span = document.createElement('span');
+      span.textContent = char;
+      span.style.display = char === ' ' ? 'inline' : 'inline-block';
+      typewriterText.appendChild(span);
+      gsap.from(span, {
+        opacity: 0,
+        y: char === ' ' ? 0 : 10,
+        duration: 0.4,
+        delay: i * 0.04 + 1.5,
+        ease: "power2.out"
+      });
     });
-  }
 
-  document.querySelectorAll('.btn').forEach(btn => {
-    btn.addEventListener('click', () => loadShape(btn.dataset.shape));
-  });
+    // Typewriter cursor animation
+    gsap.to('.typewriter::after', {
+      opacity: 0.2,
+      duration: 0.7,
+      repeat: -1,
+      yoyo: true,
+      ease: "power1.inOut",
+      delay: 2.5
+    });
 
-  document.getElementById('rotasi').onclick = () => {
-    isRotating = !isRotating;
-    document.getElementById('rotasi').textContent = isRotating ? '▶ Rotasi' : '⏸ Rotasi';
-  };
-
-  document.getElementById('wireframe').onclick = () => {
-    isWireframe = !isWireframe;
-    updateWireframe(currentMesh?.geometry.type.includes('Box') || (currentMesh?.geometry.parameters?.radialSegments <= 4));
-    document.getElementById('wireframe').classList.toggle('active', isWireframe);
-  };
-
-  document.getElementById('labels').onclick = () => {
-    showLabels = !showLabels;
-    if (!showLabels) {
-      labels.forEach(l => l.el.remove());
-      labels = [];
-    } else if (currentMesh) {
-      let vc = 0;
-      if (currentMesh.geometry.type.includes('Box')) vc = 8;
-      else if (currentMesh.geometry.parameters?.radialSegments === 3) vc = 6;
-      else if (currentMesh.geometry.parameters?.radialSegments === 4) vc = 5;
-      if (vc > 0) addLabels(vc, currentMesh.geometry);
-    }
-    document.getElementById('labels').classList.toggle('active', showLabels);
-  };
-
-  document.getElementById('shadows').onclick = () => {
-    renderer.shadowMap.enabled = !renderer.shadowMap.enabled;
-    document.getElementById('shadows').classList.toggle('active', renderer.shadowMap.enabled);
-  };
-
-  document.getElementById('handTrack').onclick = async () => {
-    handTrackActive = !handTrackActive;
-    document.getElementById('handTrack').classList.toggle('active', handTrackActive);
-    document.getElementById('handTrack').textContent = handTrackActive ? '🖐 Hand Active' : '🖐 Hand Track';
-
-    if (handTrackActive) {
-      orbitControls.enabled = false;
-      if (!handposeModel) {
-        handStatus.textContent = "Memuat model Handpose...";
-        try {
-          handposeModel = await handpose.load();
-          console.log("Handpose model loaded");
-          handStatus.textContent = "Model Handpose siap! Gerakkan tangan telapak terbuka.";
-        } catch (err) {
-          console.error("Gagal load Handpose:", err);
-          handStatus.textContent = "Gagal memuat model Handpose. Cek koneksi.";
-          handTrackActive = false;
-          return;
-        }
-      }
-
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: {
-            width: { ideal: 640 },
-            height: { ideal: 480 },
-            frameRate: { ideal: 30 }
-          }
+    // Navigation hover animation
+    gsap.utils.toArray("nav a").forEach(link => {
+      link.addEventListener('mouseenter', () => {
+        gsap.to(link, {
+          scale: 1.1,
+          color: 'var(--accent)',
+          duration: 0.3,
+          ease: "power2.out"
         });
-        video.srcObject = stream;
+      });
+      link.addEventListener('mouseleave', () => {
+        gsap.to(link, {
+          scale: 1,
+          color: 'var(--text)',
+          duration: 0.3,
+          ease: "power2.out"
+        });
+      });
+    });
 
-        video.onloadedmetadata = () => {
-          video.play().then(() => {
-            console.log("Kamera playing");
-            handStatus.textContent = "Kamera aktif - gerakkan tangan telapak terbuka!";
-            if (!previewLoopId) {
-              previewLoopId = requestAnimationFrame(previewDraw);
-            }
-          }).catch(err => console.error("Play error:", err));
-        };
+    // Section animations with ScrollTrigger
+    gsap.utils.toArray("section").forEach((section) => {
+      gsap.from(section.children, {
+        scrollTrigger: {
+          trigger: section,
+          start: "top 80%",
+          toggleActions: "play none none none",
+          markers: false
+        },
+        y: 30,
+        opacity: 0,
+        duration: 0.8,
+        stagger: 0.2,
+        ease: "power3.out"
+      });
+    });
 
-      } catch (err) {
-        console.error("getUserMedia error:", err);
-        alert("Error akses kamera: " + err.message);
-        handTrackActive = false;
-        document.getElementById('handTrack').classList.remove('active');
-        document.getElementById('handTrack').textContent = '🖐 Hand Track';
-        orbitControls.enabled = true;
+    // Card hover and scroll animations
+    gsap.utils.toArray(".card, .work-card").forEach((card) => {
+      gsap.from(card, {
+        scrollTrigger: {
+          trigger: card,
+          start: "top 90%",
+          toggleActions: "play none none none"
+        },
+        y: 50,
+        opacity: 0,
+        duration: 0.7,
+        ease: "power3.out"
+      });
+
+      card.addEventListener('mouseenter', () => {
+        gsap.to(card, {
+          scale: 1.05,
+          boxShadow: "0 4px 15px rgba(127, 90, 240, 0.3)",
+          duration: 0.3,
+          ease: "power2.out"
+        });
+      });
+      card.addEventListener('mouseleave', () => {
+        gsap.to(card, {
+          scale: 1,
+          boxShadow: "none",
+          duration: 0.3,
+          ease: "power2.out"
+        });
+      });
+    });
+
+    // Footer animation
+    gsap.from("footer", {
+      scrollTrigger: {
+        trigger: "footer",
+        start: "top 90%",
+        toggleActions: "play none none none"
+      },
+      opacity: 0,
+      y: 20,
+      duration: 0.8,
+      ease: "power2.out"
+    });
+
+    // Music Player Logic
+    const playlist = document.querySelector('.playlist');
+    const playBtn = document.querySelector('.play-btn');
+    const loopBtn = document.querySelector('.loop-btn');
+    const progress = document.querySelector('progress');
+    const timeDisplay = document.querySelector('.time');
+    const volumeSlider = document.querySelector('.volume-slider');
+    const songTitle = document.querySelector('.song-title');
+    let audio = new Audio(playlist.value);
+
+    const updatePlayer = () => {
+      audio.src = playlist.value;
+      audio.currentTime = 0;
+      progress.value = 0;
+      timeDisplay.textContent = '0:00';
+      playBtn.textContent = '▶️';
+      loopBtn.style.background = audio.loop ? '#6b4cd1' : 'var(--accent)';
+      const selectedOption = playlist.options[playlist.selectedIndex];
+      songTitle.innerHTML = `🎵 <em>${selectedOption.dataset.title}</em> – Pop Songs`;
+      gsap.from(songTitle, {
+        opacity: 0,
+        y: 10,
+        duration: 0.3,
+        ease: "power2.out"
+      });
+    };
+
+    playlist.addEventListener('change', updatePlayer);
+
+    playBtn.addEventListener('click', () => {
+      if (audio.paused) {
+        audio.play().catch(e => console.error('Audio play failed:', e));
+        playBtn.textContent = '⏸';
+        gsap.to(playBtn, {
+          scale: 1.2,
+          duration: 0.2,
+          ease: "power2.out",
+          yoyo: true,
+          repeat: 1
+        });
+      } else {
+        audio.pause();
+        playBtn.textContent = '▶️';
+        gsap.to(playBtn, {
+          scale: 1.2,
+          duration: 0.2,
+          ease: "power2.out",
+          yoyo: true,
+          repeat: 1
+        });
       }
-    } else {
-      orbitControls.enabled = true;
-      if (video.srcObject) {
-        video.srcObject.getTracks().forEach(track => track.stop());
-        video.srcObject = null;
+    });
+
+    loopBtn.addEventListener('click', () => {
+      audio.loop = !audio.loop;
+      loopBtn.style.background = audio.loop ? '#6b4cd1' : 'var(--accent)';
+      gsap.to(loopBtn, {
+        scale: 1.2,
+        duration: 0.2,
+        ease: "power2.out",
+        yoyo: true,
+        repeat: 1
+      });
+    });
+
+    progress.addEventListener('click', (e) => {
+      const rect = progress.getBoundingClientRect();
+      const clickX = e.clientX - rect.left;
+      const width = rect.width;
+      const seekTime = (clickX / width) * audio.duration;
+      audio.currentTime = seekTime;
+    });
+
+    audio.addEventListener('timeupdate', () => {
+      const progressPercent = (audio.currentTime / audio.duration) * 100;
+      progress.value = progressPercent;
+      const minutes = Math.floor(audio.currentTime / 60);
+      const seconds = Math.floor(audio.currentTime % 60).toString().padStart(2, '0');
+      timeDisplay.textContent = `${minutes}:${seconds}`;
+    });
+
+    audio.addEventListener('ended', () => {
+      if (!audio.loop) {
+        playBtn.textContent = '▶️';
+        progress.value = 0;
+        timeDisplay.textContent = '0:00';
       }
-      if (previewLoopId) {
-        cancelAnimationFrame(previewLoopId);
-        previewLoopId = null;
+    });
+
+    volumeSlider.addEventListener('input', () => {
+      audio.volume = volumeSlider.value;
+      gsap.to(volumeSlider, {
+        scale: 1.1,
+        duration: 0.2,
+        ease: "power2.out",
+        yoyo: true,
+        repeat: 1
+      });
+    });
+
+    // Card Slider Logic
+    const sliders = {
+      poetry: {
+        element: document.querySelector('#poetry-slider .card-slider-inner'),
+        slides: document.querySelectorAll('#poetry-slider .card-slide'),
+        currentIndex: 0
+      },
+      web: {
+        element: document.querySelector('#web-slider .card-slider-inner'),
+        slides: document.querySelectorAll('#web-slider .card-slide'),
+        currentIndex: 0
       }
-      const ctx = debugCanvas.getContext('2d');
-      ctx.clearRect(0, 0, debugCanvas.width, debugCanvas.height);
-      handStatus.textContent = "Hand Tracking dimatikan";
-    }
-  };
+    };
 
-  document.getElementById('reset').onclick = () => {
-    camera.position.set(0, 6, 12);
-    orbitControls.reset();
-    if (currentMesh) currentMesh.position.set(0,0,0);
-  };
+    const updateSlider = (sliderId) => {
+      const slider = sliders[sliderId];
+      gsap.to(slider.element, {
+        x: -slider.currentIndex * 100 + '%',
+        duration: 0.3,
+        ease: 'power2.out'
+      });
+      const prevBtn = document.querySelector(`.prev-btn[data-slider="${sliderId}"]`);
+      const nextBtn = document.querySelector(`.next-btn[data-slider="${sliderId}"]`);
+      prevBtn.disabled = slider.currentIndex === 0;
+      nextBtn.disabled = slider.currentIndex === slider.slides.length - 1;
+    };
 
-  document.getElementById('fullscreen').onclick = () => {
-    if (document.fullscreenElement) document.exitFullscreen();
-    else container.requestFullscreen();
-  };
+    document.querySelectorAll('.prev-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const sliderId = btn.dataset.slider;
+        const slider = sliders[sliderId];
+        if (slider.currentIndex > 0) {
+          slider.currentIndex--;
+          updateSlider(sliderId);
+          gsap.to(btn, {
+            scale: 1.2,
+            duration: 0.2,
+            ease: "power2.out",
+            yoyo: true,
+            repeat: 1
+          });
+        }
+      });
+    });
 
-  window.addEventListener('resize', () => {
-    camera.aspect = container.clientWidth / container.clientHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(container.clientWidth, container.clientHeight);
-  });
+    document.querySelectorAll('.next-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const sliderId = btn.dataset.slider;
+        const slider = sliders[sliderId];
+        if (slider.currentIndex < slider.slides.length - 1) {
+          slider.currentIndex++;
+          updateSlider(sliderId);
+          gsap.to(btn, {
+            scale: 1.2,
+            duration: 0.2,
+            ease: "power2.out",
+            yoyo: true,
+            repeat: 1
+          });
+        }
+      });
+    });
 
-  init();
-  loadShape('kubus');
-</script>
+    // Initialize sliders
+    updateSlider('poetry');
+    updateSlider('web');
+
+    // Modal Logic
+    const modal = document.getElementById('poem-modal');
+    const modalTitle = document.getElementById('modal-title');
+    const modalText = document.getElementById('modal-text');
+    const openModalLinks = document.querySelectorAll('.open-modal');
+    const closeBtn = document.querySelector('.close-btn');
+
+    const poems = {
+      Duri: {
+        title: 'Duri',
+        text: `kau datang menemani dengan maksud yang tak bisa kumengerti<br>
+tentu kau tertancap duri...tubuhku sengaja kuselimuti duri<br>
+jika kau tersakiti obati lukamu dengan membenci dan hendaklah pergi<br>
+peringatkan kawanmu tentang duri yang kau temui <br>
+dan tambahkanlah kebencian agar lukamu cepat terobati<br>
+tak heran duriku semakin menjadi..semakin kau mendekat semakin kau tersakiti.`
+      },
+      Supernova: {
+        title: 'Supernova',
+        text: `aku menunggu supernova yang tak kunjung terjadi<br>
+mati katanya bintang yang tak dikenal ini<br>
+harapan ingin menerangi tak tertepati<br>
+jadilah dia serpihan yang mengambang diruang antariksa yang sepi<br>
+komet yang setia berkunjung 70 tahun seali tak mengerti mengapa dia(bintang) mati<br>
+tragedy yang terjadi seolah berkata aku mati tak lain hanya ingin terlahir kembali.`
+      },
+      Pertemuan: {
+        title: 'Pertemuan',
+        text: `lisan tak menyapa namun hati berkata lama tak jumpa<br>
+mata mencoba berbicara namun hanya terucap sepatah kata<br>
+tak ada cerita dari pertemuan singkat lagi tanpa makna<br>
+namun bukan berakhir tanpa menyisakan tanya.`
+      }
+    };
+
+    openModalLinks.forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const poemId = link.dataset.poem;
+        if (poems[poemId]) {
+          modalTitle.textContent = poems[poemId].title;
+          modalText.innerHTML = poems[poemId].text;
+          modal.style.display = 'flex';
+          gsap.fromTo('.modal-content', 
+            { scale: 0.8, opacity: 0, y: 50 },
+            { scale: 1, opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' }
+          );
+        } else {
+          console.error(`Poem "${poemId}" not found.`);
+        }
+      });
+    });
+
+    closeBtn.addEventListener('click', () => {
+      gsap.to('.modal-content', {
+        scale: 0.8,
+        opacity: 0,
+        y: 50,
+        duration: 0.3,
+        ease: 'power2.in',
+        onComplete: () => { modal.style.display = 'none'; }
+      });
+    });
+
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        gsap.to('.modal-content', {
+          scale: 0.8,
+          opacity: 0,
+          y: 50,
+          duration: 0.3,
+          ease: 'power2.in',
+          onComplete: () => { modal.style.display = 'none'; }
+        });
+      }
+    });
+
+    // Initialize song title
+    updatePlayer();
+  </script>
 </body>
 </html>
+
+
+
+
+
